@@ -72,8 +72,8 @@ import numpy as np
 
 
 # paths for the input audio files
-ALARM_AUDIO_SOURCE = path.join('..', 'audio', 'alarms')
-BACKGROUND_AUDIO_SOURCE = path.join('..', 'audio', 'background')
+ALARM_AUDIO_SOURCE = path.join('.', 'audio', 'panic')
+BACKGROUND_AUDIO_SOURCE = path.join('.', 'audio', 'background')
 
 # how to create the sound samples
 MAX_BACKGROUND_LAYERS = 4  # when creating a new sample sound
@@ -85,15 +85,15 @@ SPECTROGRAM_TYPES = ['Std', 'Mel', 'QPlot-freq', 'reassigned', 'harmonic']
 # Tuned for Alarm use case
 FREQ_LIMIT = [1000, 4000]
 
-# 3 seconds @ 48000
-SAMPLE_DURATION = 3
+# 10 seconds @ 48000
+SAMPLE_DURATION = 10
 SAMPLE_RATE = 48000
 SAMPLE_LEN = SAMPLE_RATE * SAMPLE_DURATION
 
 # generated folders
 TOP_FOLDER = '../training-data'
-DIR_PREFIX_WITH = 'alarm'
-DIR_PREFIX_WITHOUT = 'no_alarm'
+DIR_PREFIX_WITH = 'panic_attack'
+DIR_PREFIX_WITHOUT = 'no_panic_attack'
 
 sample_cache = dict()
 
@@ -131,9 +131,14 @@ def normalize_length(samples):
 
 def get_random_subset_of_waveform(wav_data):
     max_len = len(wav_data)
+    #print(max_len)
+    
     # just for the alarm sounds, take from 50% to 100% of the sample data
     new_len = rnd.randrange(max_len // 2, max_len)
-    offset = rnd.randint(0, SAMPLE_LEN - new_len)
+    
+    print(SAMPLE_LEN - new_len)
+    
+    offset = rnd.randint(1, SAMPLE_LEN - new_len)
     return np.copy(wav_data[offset: offset + new_len])
 
 
@@ -178,13 +183,12 @@ def get_output_folder_for(spectrogram_type, with_alarm, output_subfolder):
 
 
 # for debugging
-os.chdir('clean_copy/util')
+# os.chdir('clean_copy/util')
 
-# get a list of all file names for alarm + background wav files
+# get a list of all file names for panic_attacks + background wav files
 alarm_file_list = get_wav_file_list(ALARM_AUDIO_SOURCE)
 background_file_list = get_wav_file_list(BACKGROUND_AUDIO_SOURCE)
 MAX_BACKGROUND_LAYERS = min(MAX_BACKGROUND_LAYERS, len(background_file_list))
-
 
 def generate_images():
     num_images = 0
